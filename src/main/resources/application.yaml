@@ -1,0 +1,66 @@
+logging:
+  level:
+    root: INFO
+    "[org.springframework]": INFO
+    "[org.mongodb]": INFO
+    "[io.symphony]": DEBUG
+    "[org.springframework.cloud]": INFO
+    "[org.springframework.amqp]": INFO
+
+spring:
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  rabbitmq:
+    host: 127.0.0.1
+    username: rabbitmq
+    password: rabbitmq
+  data:
+    mongodb:
+      port: 27017
+      host: 127.0.0.1
+      username: symphony-demo
+      password: symphony-demo
+      database: symphony-demo
+      authentication-database: symphony-demo
+  cloud:
+    stream:
+      function:
+        definition: publishPoint;processCommand
+      bindings:
+        publishPoint-out-0:
+          destination: status
+        processCommand-in-0:
+          destination: command
+      rabbit:
+        bindings:
+          publishPoint-out-0:
+            producer:
+              exchangeType: fanout
+          processCommand-in-0:
+            consumer:
+              exchangeType: fanout
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      defaults:
+        enabled: false
+      prometheus:
+        enabled: true
+
+symphony:
+  extension:
+    name: extension
+    points:
+      - id: test1
+        type: Quantity
